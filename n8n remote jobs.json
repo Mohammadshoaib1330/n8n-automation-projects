@@ -1,0 +1,123 @@
+{
+  "name": "n8n remote jobs",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a5f7ec56-7ebf-4d19-8b83-0bb7cc554511",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.adzuna.com/v1/api/jobs/us/search/1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "app_id",
+              "value": "7035aff9"
+            },
+            {
+              "name": "app_key",
+              "value": "49438b79a5454d801b5d6e3963ab29ee"
+            },
+            {
+              "name": "what",
+              "value": "n8n automation"
+            },
+            {
+              "name": "results_per_page",
+              "value": "30"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "73e7e2c9-9067-4f1f-bc01-9e0602c6c8ab",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "16ee2de1-c9bf-4dca-ac46-52f9c2bbc2c9",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "9qvzrQUI7cpaAcDV",
+          "name": "Google Service Account account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "f7dc192d-7201-4a01-86bc-7554cc8f0a47",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1795ca52843b9989e349ae19d90eab0ad1859b8768c065fd748b316c7fa0f082"
+  },
+  "id": "uStO6sFO-GVHX_c4-c7Gi",
+  "tags": []
+}
