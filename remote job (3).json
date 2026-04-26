@@ -1,0 +1,219 @@
+{
+  "name": "remote job",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d213328a-ef5f-46ec-bca1-9718c9736175",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_jobs"
+            },
+            {
+              "name": "q",
+              "value": "remote n8n developer jobs"
+            },
+            {
+              "name": "api_key",
+              "value": "0065f2464678a9c6d1f83e763640fc0ddaf2acc9cfb358689d11879202746ceb"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "42eb3a7f-8780-4a18-ae5d-7b253bc06248",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ye code SerpApi ke data mein se top 20 jobs filter karega\nconst jobs = items[0].json.jobs_results || [];\n\n// Sirf pehli 20 jobs uthayen\nconst topJobs = jobs.slice(0, 20);\n\nreturn topJobs.map(job => {\n  return {\n    json: {\n      Company: job.company_name,\n      Job_Title: job.title,\n      Salary: job.detected_extensions?.salary || \"Not Mentioned\",\n      Apply_Link: job.related_links?.[0]?.link || \"No Link Provided\",\n      Posted_At: job.detected_extensions?.posted_at || \"Today\",\n      Date_Found: new Date().toLocaleDateString()\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "683d6446-a879-419f-b54a-1c1038b26f28",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "=1YFErKPbkJapi4nE5bMGJwJyb3VrbmEawdQuCrQBXfOo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YFErKPbkJapi4nE5bMGJwJyb3VrbmEawdQuCrQBXfOo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company": "={{ $json.company_name }}",
+            "Job Title": "={{ $json.title }}",
+            "Website": "={{ $json.share_link }}",
+            "Country": "={{ $json.location }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        0
+      ],
+      "id": "b2efd720-a83b-49cb-b039-c5f63556ee0a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IQyhLf0HJ26myWw6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "jobs_results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -304
+      ],
+      "id": "32f1d06b-f9d3-450a-a2ac-bb29bd11f749",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1779880a-fe2e-41b2-9481-c112a60c358c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f4e48c8ac4e9aa6f9f6c75216e83c595d693c8694798be5e1eff44f3a45ebde6"
+  },
+  "id": "XivHmMhltWdH0726",
+  "tags": []
+}
